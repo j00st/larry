@@ -4,15 +4,6 @@ from typing import List
 class Node(object):
     def __init__(self) -> None:
         pass
-    
-    # def __eq__(self, other):
-    #     if not isinstance(other, Node):
-    #         return NotImplemented
-    #     return (type(self) is type(other) and \
-    #         self.__dict__ == other.__dict__)
-
-    # def __ne__(self, other):
-    #     return not(self == other)
 
 class Constant(Node):
     def __init__(self, value):
@@ -175,7 +166,6 @@ class Fun(Node):
     def __init__(self, body: Group, param: list):
         self.body = body
         self.param = param
-        # self.memory = self.make_memory(self.param)
 
     def __str__(self) -> str:
         return 'Node[Fun({}, {})]'.format(self.param, self.body)
@@ -196,7 +186,7 @@ class Fun(Node):
     
     def make_memory(self, memory: dict, param: list, function_memory: dict = {}, pos: int = 0) -> list:
         if(len(param) == pos):
-            # function_memory.update(memory)
+            function_memory.update(memory)
             # print('Global memory: {}, {}'.format(len(memory), memory))
             # print('Local memory: {}'.format(function_memory))
             return function_memory

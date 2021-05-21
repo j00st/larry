@@ -1,0 +1,16 @@
+odd=fun>n:
+if n==0:
+return 1<0
+end
+return run even>n-1
+end
+
+even=fun>m:
+if m==0:
+return 1>0
+end
+return run odd>m-1
+end
+
+print run even>5
+print run odd>5
