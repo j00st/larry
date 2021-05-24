@@ -24,8 +24,20 @@ class Lexer(object):
     def error(self, msg = 'unknown error'):
         raise Exception('Lexer error: ' + msg)
 
+    def log(func):
+        def inner(*args):
+            if(len(args)>3):
+                log = open("larrylog.txt","a")
+                log.write('\n' + str(args[-1][-1]))
+                if(args[3]>=len(args[1])):
+                    log.write('\nEOF Token\n')
+                log.close()
+            return func(*args)
+        return inner
+
     # lex :: String -> [(String, String)] -> Integer -> \
     # [(String, String)] -> Function | [(String, String)]
+    @log
     def lex(self, characters : str, \
                   exprs : List[Tuple[str, str]], \
                   position : int = 0, \
@@ -58,6 +70,8 @@ class Lexer(object):
                     l.append(Token(type, value))
                 elif type == 't_RAW':
                     l.append(Token(type, value[1:-1]))
+                elif type == 't_ENDOFLINE':
+                    l.append(Token(type, '\\n'))
                 else:
                     l.append(Token(type, value))
             return l

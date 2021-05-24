@@ -224,6 +224,7 @@ class FunDec(Node):
     def __call__(self, memory: dict, pos=0) -> Fun:
         return Fun(self.body, self.param)
 
+
 class Run(Node):
     def __init__(self, name: Tag, param: list):
         self.name = name
@@ -237,6 +238,7 @@ class Run(Node):
 
     def __call__(self, memory: dict) -> Node:
         return memory[self.name.name](memory, self.param)
+
 
 class Return(Node):
     def __init__(self, body: Node):

@@ -8,6 +8,13 @@ if len(sys.argv) != 2:
     sys.stderr.write('Please mention a file to lex\n')
     sys.exit(1)
 filename = sys.argv[1]
+
+
+logfile = open("larrylog.txt","w")
+logfile.write("Log of program {}\n".format(filename))
+logfile.close()
+
+
 file = open(filename)
 characters = file.read()
 file.close()

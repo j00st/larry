@@ -169,7 +169,14 @@ class Parser(object):
                 self.advance('t_ENDFUN')
                 return Group(nodes)
         return self.group(nodes)
-    
+
+    def log(self, nodes: list, pos: int = 0) -> None:
+        if(pos<len(nodes)):
+            logfile = open("larrylog.txt","a")
+            logfile.write('\n' + str(nodes[pos]))
+            logfile.close()
+            self.log(nodes, pos+1)
+
     def parse(self, nodes = []):
         node = self.begin()
         token = self.tokens[self.pos]
@@ -178,5 +185,6 @@ class Parser(object):
             nodes.append(node)
         if token.type == 't_EOF':
             nodes.append(node)
+            self.log(nodes)
             return nodes
         return self.parse(nodes)
