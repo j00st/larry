@@ -5,6 +5,7 @@ class Node(object):
     def __init__(self) -> None:
         pass
 
+
 class Constant(Node):
     def __init__(self, value):
         self.value = int(value)
@@ -17,6 +18,7 @@ class Constant(Node):
     
     def __call__(self, memory: dict) -> int:
         return self.value
+
 
 class Tag(Node):
     def __init__(self, name: str, value: Node = None) -> None:
@@ -34,6 +36,7 @@ class Tag(Node):
             self.value = memory[self.name]
         return self.value
 
+
 class Operator(Node):
     def __init__(self, op):
         self.op = op
@@ -46,7 +49,8 @@ class Operator(Node):
 
     def __call__(self, memory: dict) -> str:
         return self.op
-        
+
+
 class Operation(Node):
     def __init__(self, left: Node, op: Operator, right: Node):
         self.left = left
@@ -64,7 +68,8 @@ class Operation(Node):
         elif self.op(memory) == '-': return self.left(memory) - self.right(memory)
         elif self.op(memory) == '*': return self.left(memory) * self.right(memory)
         elif self.op(memory) == '/': return self.left(memory) / self.right(memory)
-    
+
+
 class Comparison(Node):
     def __init__(self, left: Node, op: Operator, right: Node):
         self.left = left
@@ -85,6 +90,7 @@ class Comparison(Node):
         elif self.op(memory) == '!=': return self.left(memory) != self.right(memory)
         elif self.op(memory) == '==': return self.left(memory) == self.right(memory)
 
+
 class Assignment(Node):
     def __init__(self, left: Node, right: Node):
         self.left = left
@@ -99,6 +105,7 @@ class Assignment(Node):
     def __call__(self, memory: dict) -> None:
         memory[self.left.name] = self.right(memory)
 
+
 class Print(Node):
     def __init__(self, body: Node):
         self.body = body
@@ -112,7 +119,7 @@ class Print(Node):
     def __call__(self, memory: dict) -> None:
         print(self.body(memory))
 
-# To enable if/loop/param functions, groups of nodes are made
+
 class Group(Node):
     def __init__(self, nodes):
         self.nodes = nodes
@@ -123,10 +130,14 @@ class Group(Node):
     def __repr__(self) -> str:
         return self.__str__()
 
-    def __call__(self, memory: dict, pos: int = 0) -> None:
+    def __call__(self, memory: dict, pos: int = 0) -> Node:
+        current_node = self.nodes[pos]
+        if(type(current_node) == Return):
+            return current_node
         if(len(self.nodes) > pos):
             self.nodes[pos](memory)
-            self.__call__(memory, pos+1)
+            return self.__call__(memory, pos+1)
+
 
 class If(Node):
     def __init__(self, condition: Node, body: Group):
@@ -139,9 +150,12 @@ class If(Node):
     def __repr__(self) -> str:
         return self.__str__()
 
-    def __call__(self, memory: dict) -> None:
+    def __call__(self, memory: dict) -> Node:
         if(self.condition(memory)):
-            self.body(memory)
+            current_node = self.body(memory)
+            if(type(current_node) == Return):
+                return current_node
+
 
 class While(Node):
     def __init__(self, condition: Node, body: Group):
@@ -158,10 +172,12 @@ class While(Node):
         if(self.condition(memory)):
             if(pos == len(self.body.nodes)):        # when last node is reached, set pos to first node (0)
                 pos=0
-            self.body.nodes[pos](memory)
+            current_node = self.body.nodes[pos](memory)
+            if(type(current_node) == Return):
+                return current_node
             self.__call__(memory, pos+1)
 
-# For function in memory
+
 class Fun(Node):
     def __init__(self, body: Group, param: list):
         self.body = body
@@ -181,20 +197,19 @@ class Fun(Node):
         current_node = self.body.nodes[pos]
         if(type(current_node) == Return):
             return current_node(function_memory)
-        current_node(function_memory)
+        ret = current_node(function_memory)
+        if(type(ret) == Return):
+            return current_node(function_memory)(function_memory)
         return self.__call__(memory, param, function_memory, pos+1)
     
     def make_memory(self, memory: dict, param: list, function_memory: dict = {}, pos: int = 0) -> list:
         if(len(param) == pos):
             function_memory.update(memory)
-            # print('Global memory: {}, {}'.format(len(memory), memory))
-            # print('Local memory: {}'.format(function_memory))
             return function_memory
         function_memory[self.param[pos].name] = param[pos](memory)
         return self.make_memory(memory, param, function_memory, pos+1)
 
 
-# For function decleration
 class FunDec(Node):
     def __init__(self, body: Group, param: list):
         self.body = body

@@ -1,4 +1,5 @@
-from larrynodes import Constant, Node, \
+from larrynodes import Constant, \
+                       Node, \
                        Tag, \
                        Operator, \
                        Operation, \
@@ -11,6 +12,7 @@ from larrynodes import Constant, Node, \
                        FunDec, \
                        Run, \
                        Return
+
 
 class Parser(object):
     def __init__(self, tokens) -> None:
@@ -31,7 +33,6 @@ class Parser(object):
         if token.type in args or token.value in args:
             self.pos += 1
         else:
-            print('!! advance error !!')
             self.error()
 
     def int_tag(self):
@@ -42,12 +43,11 @@ class Parser(object):
         elif token.type == 't_TAG':
             self.advance('t_TAG')
             return Tag(token.value, None)
-        elif token.type == 't_LPAR':         # Opening paranthesis
+        elif token.type == 't_LPAR':
             self.advance('t_LPAR')
             node = self.compare()
             self.advance('t_RPAR')
             return node
-        print('========> Unknown token {}'.format(self.tokens[self.pos]))
         self.error()
     
     def mul_div(self, node = None):

@@ -1,6 +1,7 @@
 import sys, re
 from typing import List, Tuple, Union
 
+
 class Token(object):
     def __init__(self, type, value):
         self.type = type
@@ -12,12 +13,16 @@ class Token(object):
     def __repr__(self):
         return self.__str__()
 
+
 class Lexer(object):
     def __init__(self):
         pass
 
     def __repr__(self):
         return 'Lexer'
+
+    def error(self, msg = 'unknown error'):
+        raise Exception('Lexer error: ' + msg)
 
     # lex :: String -> [(String, String)] -> Integer -> \
     # [(String, String)] -> Function | [(String, String)]
@@ -34,15 +39,12 @@ class Lexer(object):
             tokens.append(l[1])
         return self.lex(characters, exprs, position, tokens)
 
-
     # match_expr :: [(String, String)] -> String -> Function | [int, (str, str)]
     def match_expr(self, exprs : List[Tuple[str, str]], \
                          characters : str, \
                          position : int) -> Tuple[int, Tuple[str, str]]:
         if len(exprs) == 0:
-            sys.stderr.write('Illegal character: %s at %d\n' % \
-                (characters[position], position))
-            sys.exit(1)
+            self.error('Unknown character {} at {}'.format(characters[position], position))
         match = None
         (pattern, type), *tail = exprs
         regex = re.compile(pattern)

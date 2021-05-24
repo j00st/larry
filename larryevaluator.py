@@ -1,5 +1,6 @@
 from larrynodes import Assignment, Comparison, Node, Constant, Tag, Operator, Operation
 
+
 class Evaluator(object):
     def __init__(self) -> None:
         self.globalmemory = {}
@@ -9,15 +10,6 @@ class Evaluator(object):
 
     def __repr__(self) -> str:
         return self.__str__()
-    
-    # def operation(self, node: Operation) -> None:
-    #     print(node())
-    
-    # def comparison(self, node: Comparison) -> None:
-    #     print(node())
-    
-    # def assignment(self, node: Assignment) -> Tag:
-    #     print(node())
 
     def evaluate(self, nodes: Node, pos: int = 0) -> None:
         node = nodes[pos]

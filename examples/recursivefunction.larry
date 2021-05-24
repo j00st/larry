@@ -1,0 +1,7 @@
+rec_loop=fun>n:
+if n<5:
+print n
+run rec_loop>n+1
+end
+end
+run rec_loop>1

@@ -1,0 +1,24 @@
+odd=fun>n:
+if n==0:
+return 1<0
+end
+return run even>n-1
+end
+
+even=fun>m:
+if m==0:
+return 1>0
+end
+return run odd>m-1
+end
+
+print run even>1
+print run odd>1
+print run even>7
+print run odd>7
+print run even>8
+print run odd>8
+print run even>9
+print run odd>9
+print run even>0
+print run odd>0

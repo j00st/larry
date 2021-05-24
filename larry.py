@@ -15,7 +15,6 @@ lexer = Lexer()
 tokens = lexer.lex(characters, larryexpressions.regularExpressions)
 
 print('=== TOKENS ===')
-
 for token in tokens:
     print(token)
 
@@ -23,7 +22,6 @@ parser = Parser(tokens)
 nodes = parser.parse()
 
 print('=== NODES ===')
-
 for node in nodes:
     print(node)
 
@@ -33,5 +31,4 @@ evaluator = Evaluator()
 evaluator.evaluate(nodes)
 
 print('=== MEMORY ===')
-
 print(evaluator.globalmemory)
