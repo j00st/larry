@@ -1,5 +1,5 @@
-import sys, re
-from typing import List, Tuple, Union
+import re
+from typing import List, Tuple
 
 
 class Token(object):

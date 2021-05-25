@@ -1,7 +1,7 @@
-from larrylexer import Lexer
-from larryparser import Parser
-from larryevaluator import Evaluator
-import sys, larryexpressions
+from Lexer import Lexer
+from Parser import Parser
+from Evaluator import Evaluator
+import sys, Expressions
 
 if len(sys.argv) != 2:
     sys.stderr.write('Please mention a larry file\n')
@@ -16,7 +16,7 @@ file = open(filename)
 characters = file.read()
 file.close()
 lexer = Lexer()
-tokens = lexer.lex(characters, larryexpressions.regularExpressions)
+tokens = lexer.lex(characters, Expressions.regularExpressions)
 parser = Parser(tokens)
 nodes = parser.parse()
 evaluator = Evaluator()

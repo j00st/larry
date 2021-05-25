@@ -1,4 +1,4 @@
-from larrynodes import Constant, \
+from Nodes import Constant, \
                        Node, \
                        Tag, \
                        Operator, \
