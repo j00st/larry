@@ -5,6 +5,14 @@ class Node(object):
     def __init__(self) -> None:
         pass
 
+    def log(func):
+        def inner(*args):
+            logfile = open("larrylog.txt","a")
+            logfile.write('\n' + func.__str__() + '\t\t' + str(args))
+            logfile.close()
+            return func(*args)
+        return inner
+
 
 class Constant(Node):
     def __init__(self, value):
@@ -168,6 +176,7 @@ class While(Node):
     def __repr__(self) -> str:
         return self.__str__()
 
+    @Node.log
     def __call__(self, memory: dict, pos=0) -> None:
         if(self.condition(memory)):
             if(pos == len(self.body.nodes)):        # when last node is reached, set pos to first node (0)
@@ -189,6 +198,7 @@ class Fun(Node):
     def __repr__(self) -> str:
         return self.__str__()
 
+    @Node.log
     def __call__(self, memory: dict, param: list, function_memory: dict = {}, pos: int = 0) -> Node:
         if(pos == 0):
             function_memory = self.make_memory(memory, param)

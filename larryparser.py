@@ -175,7 +175,10 @@ class Parser(object):
             logfile = open("larrylog.txt","a")
             logfile.write('\n' + str(nodes[pos]))
             logfile.close()
-            self.log(nodes, pos+1)
+            return self.log(nodes, pos+1)
+        logfile = open("larrylog.txt","a")
+        logfile.write('\n\nLoop and function calls:\t\t\t\t\tWith arguments:')
+        logfile.close()
 
     def parse(self, nodes = []):
         node = self.begin()

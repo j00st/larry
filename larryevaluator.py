@@ -15,5 +15,8 @@ class Evaluator(object):
         node = nodes[pos]
         node(self.globalmemory)
         if pos+1 >= len(nodes):
+            logfile = open("larrylog.txt","a")
+            logfile.write('\n\nGlobal memory as stored in evaluator:\n' + str(self.globalmemory))
+            logfile.close()
             return
         return self.evaluate(nodes, pos+1)
