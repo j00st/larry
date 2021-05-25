@@ -5,6 +5,15 @@ class Node(object):
     def __init__(self) -> None:
         pass
 
+    def __str__(self) -> str:
+        return 'Node[{}}]'.format(None)
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+    def error(msg = 'unknown error'):
+        raise Exception('Interpreter error: ' + msg)
+
     def log(func):
         def inner(*args):
             logfile = open("larrylog.txt","a")
@@ -19,7 +28,7 @@ class Constant(Node):
         self.value = int(value)
     
     def __str__(self) -> str:
-        return 'Node[Constant({})]'.format(self.value)
+        return 'Node[Constant({})]'.format(self.value.__repr__())
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -34,7 +43,7 @@ class Tag(Node):
         self.value = value
     
     def __str__(self) -> str:
-        return 'Node[Tag({}, {})]'.format(self.name, self.value)
+        return 'Node[Tag({}, {})]'.format(self.name.__repr__(), self.value.__repr__())
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -50,7 +59,7 @@ class Operator(Node):
         self.op = op
     
     def __str__(self) -> str:
-        return 'Node[Operator(%s)]' %(self.op)
+        return 'Node[Operator(%s)]' %(self.op.__repr__())
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -66,7 +75,7 @@ class Operation(Node):
         self.right = right
 
     def __str__(self) -> str:
-        return 'Node[Operation(%s, %s, %s)]' %(self.left, self.op, self.right)
+        return 'Node[Operation(%s, %s, %s)]' %(self.left.__repr__(), self.op.__repr__(), self.right.__repr__())
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -85,7 +94,7 @@ class Comparison(Node):
         self.right = right
 
     def __str__(self) -> str:
-        return 'Node[Comparison(%s, %s, %s)]' %(self.left, self.op, self.right)
+        return 'Node[Comparison(%s, %s, %s)]' %(self.left.__repr__(), self.op.__repr__(), self.right.__repr__())
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -105,7 +114,7 @@ class Assignment(Node):
         self.right = right
 
     def __str__(self) -> str:
-        return 'Node[Assignment(%s, %s)]' %(self.left, self.right)
+        return 'Node[Assignment(%s, %s)]' %(self.left.__repr__(), self.right.__repr__())
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -119,7 +128,7 @@ class Print(Node):
         self.body = body
 
     def __str__(self) -> str:
-        return 'Node[Print({})]'.format(self.body)
+        return 'Node[Print({})]'.format(self.body.__repr__())
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -133,7 +142,7 @@ class Group(Node):
         self.nodes = nodes
 
     def __str__(self) -> str:
-        return 'Node[Group({})]'.format(self.nodes)
+        return 'Node[Group({})]'.format(self.nodes.__repr__())
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -156,7 +165,7 @@ class If(Node):
         self.body = body
 
     def __str__(self) -> str:
-        return 'Node[If({}, {})]'.format(self.condition, self.body)
+        return 'Node[If({}, {})]'.format(self.condition.__repr__(), self.body.__repr__())
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -174,7 +183,7 @@ class While(Node):
         self.body = body
 
     def __str__(self) -> str:
-        return 'Node[While({}, {})]'.format(self.condition, self.body)
+        return 'Node[While({}, {})]'.format(self.condition.__repr__(), self.body.__repr__())
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -196,7 +205,7 @@ class Fun(Node):
         self.param = param
 
     def __str__(self) -> str:
-        return 'Node[Fun({}, {})]'.format(self.param, self.body)
+        return 'Node[Fun({}, {})]'.format(self.param.__repr__(), self.body.__repr__())
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -229,7 +238,7 @@ class FunDec(Node):
         self.param = param
 
     def __str__(self) -> str:
-        return 'Node[FunDec({}, {})]'.format(self.body, self.param)
+        return 'Node[FunDec({}, {})]'.format(self.body.__repr__(), self.param.__repr__())
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -244,7 +253,7 @@ class Run(Node):
         self.param = param
 
     def __str__(self) -> str:
-        return 'Node[Run({}, {})]'.format(self.name, self.param)
+        return 'Node[Run({}, {})]'.format(self.name.__repr__(), self.param.__repr__())
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -258,7 +267,7 @@ class Return(Node):
         self.body = body
 
     def __str__(self) -> str:
-        return 'Node[Return({})]'.format(self.body)
+        return 'Node[Return({})]'.format(self.body.__repr__())
 
     def __repr__(self) -> str:
         return self.__str__()

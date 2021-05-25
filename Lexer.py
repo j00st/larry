@@ -8,7 +8,7 @@ class Token(object):
         self.value = value
 
     def __str__(self):
-        return 'Token[%s, %s]' %(self.type, self.value)
+        return 'Token[{}, {}]'.format(self.type.__repr__(), self.value.__repr__())
 
     def __repr__(self):
         return self.__str__()
@@ -43,7 +43,7 @@ class Lexer(object):
                   position : int = 0, \
                   tokens : List[Tuple[str, str]] = []) -> List[Tuple[str, str]]:
         if position >= len(characters):     # base case
-            tokens = list(filter((lambda x: x.type != 't_SPACE'), tokens))           # Remove unnecessary SPACE tokens
+            tokens = list(filter((lambda x: x.type != 't_SPACE'), tokens))            # Remove unnecessary SPACE tokens
             tokens.append(Token('t_EOF', None))
             return tokens
         l = self.match_expr(exprs, characters, position)
@@ -67,13 +67,6 @@ class Lexer(object):
             l.append(match.end(0))
             if type:
                 value = match.group(0)
-                if type == 't_INT' or type == 't_TAG':
-                    l.append(Token(type, value))
-                elif type == 't_RAW':
-                    l.append(Token(type, value[1:-1]))
-                elif type == 't_ENDOFLINE':
-                    l.append(Token(type, '\\n'))
-                else:
-                    l.append(Token(type, value))
+                l.append(Token(type, value))
             return l
         return self.match_expr(tail, characters, position)
