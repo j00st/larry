@@ -142,7 +142,10 @@ class Group(Node):
         current_node = self.nodes[pos]
         if(type(current_node) == Return):
             return current_node
-        if(len(self.nodes) > pos):
+        elif(len(self.nodes) == pos + 1):
+            self.nodes[pos](memory)
+            return
+        elif(len(self.nodes) > pos):
             self.nodes[pos](memory)
             return self.__call__(memory, pos+1)
 

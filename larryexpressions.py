@@ -24,5 +24,6 @@ regularExpressions = [
     (r'\+',                        't_OPER'),
     (r'-',                         't_OPER'),
     (r'\*',                        't_OPER'),
-    (r'/',                         't_OPER')
+    (r'/',                         't_OPER'),
+    (r'\s',                        't_SPACE')
 ]

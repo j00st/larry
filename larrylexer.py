@@ -43,6 +43,7 @@ class Lexer(object):
                   position : int = 0, \
                   tokens : List[Tuple[str, str]] = []) -> List[Tuple[str, str]]:
         if position >= len(characters):     # base case
+            tokens = list(filter((lambda x: x.type != 't_SPACE'), tokens))           # Remove unnecessary SPACE tokens
             tokens.append(Token('t_EOF', None))
             return tokens
         l = self.match_expr(exprs, characters, position)
