@@ -28,9 +28,10 @@ class Lexer(object):
         def inner(*args):
             if(len(args)>3):
                 logfile = open("larrylog.txt","a")
-                logfile.write('\n' + str(args[-1][-1]))
+                token = str(args[-1][-1])
+                logfile.write('\n' + token)
                 if(args[3]>=len(args[1])):
-                    logfile.write('\nEOF Token\n\nAST Nodes returned by Parser:')
+                    logfile.write('\nEOF Token\n\n#\tAST Nodes returned by Parser:')
                 logfile.close()
             return func(*args)
         return inner

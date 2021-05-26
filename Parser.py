@@ -171,6 +171,8 @@ class Parser(object):
         return self.group(nodes)
 
     def log(self, nodes: list, pos: int = 0) -> None:
+        if(pos == 0):
+            nodes = list(map((lambda x: str(nodes.index(x)) + '\t' + str(x)), nodes))
         if(pos<len(nodes)):
             logfile = open("larrylog.txt","a")
             logfile.write('\n' + str(nodes[pos]))

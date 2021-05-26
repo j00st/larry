@@ -1,4 +1,5 @@
 from Nodes import Node
+from functools import reduce
 
 
 class Evaluator(object):
@@ -15,8 +16,9 @@ class Evaluator(object):
         node = nodes[pos]
         node(self.globalmemory)
         if pos+1 >= len(nodes):
+            memory_string = reduce(lambda x, y: str(x) + '\n' + str(y)+ ' : ' + str(self.globalmemory[y]), self.globalmemory, '\n\nGlobal memory:')
             logfile = open("larrylog.txt","a")
-            logfile.write('\n\nGlobal memory as stored in Evaluator:\n{}'.format(self.globalmemory))
+            logfile.write(memory_string)
             logfile.close()
             return
         return self.evaluate(nodes, pos+1)
