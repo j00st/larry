@@ -13,7 +13,7 @@ from Nodes import Constant, \
                        Run, \
                        Return
 from Lexer import Token
-from typing import List, Optional
+from typing import Callable, List, Optional, Tuple
 
 
 class Parser(object):
@@ -41,8 +41,8 @@ class Parser(object):
         else:
             self.error()
 
-    # int_tag :: [Token] -> Node
-    def int_tag(self, tokens: List[Token]) -> Optional[Node]:
+    # int_tag :: [Token] -> ([Token], Node)
+    def int_tag(self, tokens: List[Token]) -> Optional[Tuple[List[Token], Node]]:
         token: Token = tokens[0]
         if token.type == 't_INT':
             tokens = self.advance(tokens, 't_INT')
@@ -57,8 +57,8 @@ class Parser(object):
             return tokens, node
         self.error()
     
-    # mul_div :: Node -> Node
-    def mul_div(self, tokens: List[Token], node: Optional[Node] = None) -> Node:
+    # mul_div :: [Token] -> Node -> ([Token], Node)
+    def mul_div(self, tokens: List[Token], node: Optional[Node] = None) -> Tuple[List[Token], Node]:
         if not node:
             tokens, node = self.int_tag(tokens)
         token: Token = tokens[0]
@@ -70,8 +70,8 @@ class Parser(object):
             return tokens, node
         return self.mul_div(tokens, node)
         
-    # plu_min :: Node -> Node
-    def plu_min(self, tokens: List[Token], node: Optional[Node] = None) -> Node:
+    # plu_min :: [Token] -> Node -> ([Token], Node)
+    def plu_min(self, tokens: List[Token], node: Optional[Node] = None) -> Tuple[List[Token], Node]:
         if not node:
             tokens, node = self.mul_div(tokens)
         token: Token = tokens[0]
@@ -83,8 +83,8 @@ class Parser(object):
             return tokens, node
         return self.plu_min(tokens, node)
 
-    # compare :: None -> Node
-    def compare(self, tokens: List[Token]) -> Node:
+    # compare :: [Token] -> ([Token], Node)
+    def compare(self, tokens: List[Token]) -> Tuple[List[Token], Node]:
         tokens, node = self.plu_min(tokens)
         token: Token = tokens[0]
         if token.type == 't_COMP':
@@ -93,8 +93,8 @@ class Parser(object):
             node = Comparison(node, Operator(token.value), right)
         return tokens, node
 
-    # assign :: None -> Node
-    def assign(self, tokens: List[Token]) -> Node:
+    # assign :: [Token] -> ([Token], Node)
+    def assign(self, tokens: List[Token]) -> Tuple[List[Token], Node]:
         tokens, node = self.compare(tokens)
         token: Token = tokens[0]
         if token.type == 't_ASSIGN':
@@ -103,8 +103,8 @@ class Parser(object):
             node = Assignment(node, body)
         return tokens, node
 
-    # print :: None -> Node
-    def print(self, tokens: List[Token]) -> Node:
+    # print :: [Token] -> ([Token], Node)
+    def print(self, tokens: List[Token]) -> Tuple[List[Token], Node]:
         token: Token = tokens[0]
         if token.type == 't_PRINTFUN':
             tokens = self.advance(tokens, 't_PRINTFUN')
@@ -113,8 +113,8 @@ class Parser(object):
             return tokens, node
         return self.assign(tokens)
     
-    # if_fun :: None -> Node
-    def if_fun(self, tokens: List[Token]) -> Node:
+    # if_fun :: [Token] -> ([Token], Node)
+    def if_fun(self, tokens: List[Token]) -> Tuple[List[Token], Node]:
         token: Token = tokens[0]
         if token.type == 't_IFFUN':
             tokens = self.advance(tokens, 't_IFFUN')
@@ -126,8 +126,8 @@ class Parser(object):
             return tokens, node
         return self.print(tokens)
 
-    # while_fun :: None -> Node
-    def while_fun(self, tokens: List[Token]) -> Node:
+    # while_fun :: [Token] -> ([Token], Node)
+    def while_fun(self, tokens: List[Token]) -> Tuple[List[Token], Node]:
         token: Token = tokens[0]
         if token.type == 't_WHILEFUN':
             tokens = self.advance(tokens, 't_WHILEFUN')
@@ -139,8 +139,8 @@ class Parser(object):
             return tokens, node
         return self.if_fun(tokens)
 
-    # param_fun :: None -> Node
-    def param_fun(self, tokens: List[Token]) -> Node:
+    # param_fun :: [Token] -> ([Token], Node)
+    def param_fun(self, tokens: List[Token]) -> Tuple[List[Token], Node]:
         token: Token = tokens[0]
         if token.type == 't_PARAMFUN':
             tokens = self.advance(tokens, 't_PARAMFUN')
@@ -152,8 +152,8 @@ class Parser(object):
             return tokens, node
         return self.while_fun(tokens)
     
-    # run :: None -> Node
-    def run(self, tokens: List[Token]) -> Node:
+    # run :: [Token] -> ([Token], Node)
+    def run(self, tokens: List[Token]) -> Tuple[List[Token], Node]:
         token: Token = tokens[0]
         if token.type == 't_RUN':
             tokens = self.advance(tokens, 't_RUN')
@@ -163,8 +163,8 @@ class Parser(object):
             return tokens, node
         return self.param_fun(tokens)
     
-    # fun_return :: None -> Node
-    def fun_return(self, tokens: List[Token]) -> Node:
+    # fun_return :: [Token] -> ([Token], Node)
+    def fun_return(self, tokens: List[Token]) -> Tuple[List[Token], Node]:
         token: Token = tokens[0]
         if token.type == 't_RETURN':
             tokens = self.advance(tokens, 't_RETURN')
@@ -173,12 +173,12 @@ class Parser(object):
             return tokens, node
         return self.run(tokens)
 
-    # begin :: None -> Node
-    def begin(self, tokens: List[Token]) -> Node:
+    # begin :: [Token] -> ([Token], Node)
+    def begin(self, tokens: List[Token]) -> Tuple[List[Token], Node]:
         return self.fun_return(tokens)
 
-    # collect_param :: [Node] -> [Node]
-    def collect_param(self, tokens: List[Token], nodes: List[Node] = []) -> Optional[List[Node]]:
+    # collect_param :: [Token] -> [Node] -> ([Token], Node)
+    def collect_param(self, tokens: List[Token], nodes: List[Node] = []) -> Optional[Tuple[List[Token], Node]]:
         token: Token = tokens[0]
         if(token.type in ('t_ENDOFLINE', 't_EOF', 't_COLON')):
             return tokens, nodes
@@ -189,8 +189,8 @@ class Parser(object):
             return self.collect_param(tokens, nodes)
         self.error()
     
-    # group :: [None] -> Node
-    def group(self, tokens: List[Token], nodes: List[Node] = []) -> Node:
+    # group :: [Token] -> [Node] -> ([Token], Node)
+    def group(self, tokens: List[Token], nodes: List[Node] = []) -> Tuple[List[Token], Node]:
         tokens, node = self.begin(tokens)
         token: Token = tokens[0]
         if token.type == 't_ENDOFLINE':
@@ -202,7 +202,7 @@ class Parser(object):
                 return tokens, Group(nodes)
         return self.group(tokens, nodes)
 
-    # int_tag :: [None] -> Int -> None
+    # int_tag :: [Token] -> [Node] -> Int -> None
     def log(self, nodes: List[Node], pos: int = 0) -> None:
         if(pos == 0):
             nodes = list(map((lambda x: str(nodes.index(x)) + '\t' + str(x)), nodes))
@@ -215,7 +215,7 @@ class Parser(object):
         logfile.write('\n\nLoop and function calls:\t\t\t\t\tWith arguments:')
         logfile.close()
 
-    # int_tag :: [None] -> [Node]
+    # int_tag :: [Token] -> [Node] -> [Node]
     def parse(self, tokens: List[Token], nodes: List[Node] = []) -> List[Node]:
         tokens, node = self.begin(tokens)
         token: Token = tokens[0]

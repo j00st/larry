@@ -15,7 +15,7 @@ class Evaluator(object):
     def __repr__(self) -> str:
         return self.__str__()
 
-    # evaluate :: Node -> Int -> None
+    # evaluate :: Node -> {Tag, Node} -> Int -> None
     def evaluate(self, nodes: Node, globalmemory: dict = {}, pos: int = 0) -> None:
         node: Node = nodes[pos]
         node(globalmemory)
