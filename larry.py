@@ -17,7 +17,9 @@ characters = file.read()
 file.close()
 lexer = Lexer()
 tokens = lexer.lex(characters, Expressions.regularExpressions)
-parser = Parser(tokens)
-nodes = parser.parse()
+
+parser = Parser()
+nodes = parser.parse(tokens)
+
 evaluator = Evaluator()
 evaluator.evaluate(nodes)
