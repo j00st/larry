@@ -1,30 +1,42 @@
 import re
-from typing import List, Tuple
+from typing import Callable, List, Tuple
 
 
 class Token(object):
-    def __init__(self, type, value):
-        self.type = type
-        self.value = value
+    # __init__ :: String -> String -> None
+    def __init__(self, type: str, value: str) -> None:
+        self.type: str = type
+        self.value: str = value
 
+    # __str__ :: None -> String
     def __str__(self):
         return 'Token[{}, {}]'.format(self.type.__repr__(), self.value.__repr__())
 
+    # __repr__ :: None -> String
     def __repr__(self):
         return self.__str__()
 
 
 class Lexer(object):
-    def __init__(self):
+    # __init__ :: None -> None
+    def __init__(self) -> None:
         pass
 
-    def __repr__(self):
+    # __str__ :: None -> String
+    def __str__(self) -> str:
         return 'Lexer'
+    
+    # __repr__ :: None -> String
+    def __repr__(self) -> str:
+        return self.__str__()
 
-    def error(self, msg = 'unknown error'):
+    # error :: String -> None
+    def error(self, msg: str = 'unknown error') -> None:
         raise Exception('Lexer error: ' + msg)
 
-    def log(func):
+    # log :: (String -> [(String, String)] -> Int -> [(String, String)] -> [(String, String)]) -> ([(String, String)] -> Int -> [(String, String)] -> (String -> [(String, String)] -> Int -> [(String, String)] -> [(String, String)]))
+    def log(func: Callable) -> Callable:
+        # inner :: [(String, String)] -> Int -> [(String, String)] -> (String -> [(String, String)] -> Int -> [(String, String)] -> [(String, String)])
         def inner(*args):
             if(len(args)>3):
                 logfile = open("larrylog.txt","a")
@@ -36,8 +48,7 @@ class Lexer(object):
             return func(*args)
         return inner
 
-    # lex :: String -> [(String, String)] -> Integer -> \
-    # [(String, String)] -> Function | [(String, String)]
+    # lex :: String -> [(String, String)] -> Int -> [(String, String)] -> [(String, String)]
     @log
     def lex(self, characters : str, \
                   exprs : List[Tuple[str, str]], \
@@ -53,7 +64,7 @@ class Lexer(object):
             tokens.append(l[1])
         return self.lex(characters, exprs, position, tokens)
 
-    # match_expr :: [(String, String)] -> String -> Function | [int, (str, str)]
+    # match_expr :: [(String, String)] -> String -> [Int, (String, String)]
     def match_expr(self, exprs : List[Tuple[str, str]], \
                          characters : str, \
                          position : int) -> Tuple[int, Tuple[str, str]]:
@@ -64,7 +75,7 @@ class Lexer(object):
         regex = re.compile(pattern)
         match = regex.match(characters, position)
         if match:
-            l = []
+            l: list = []
             l.append(match.end(0))
             if type:
                 value = match.group(0)

@@ -12,31 +12,39 @@ from Nodes import Constant, \
                        FunDec, \
                        Run, \
                        Return
+from Lexer import Token
+from typing import List, Optional
 
 
 class Parser(object):
-    def __init__(self, tokens) -> None:
-        self.tokens = tokens
-        self.pos = 0
+    # __init__ :: [Token] -> None
+    def __init__(self, tokens: List[Token]) -> None:
+        self.tokens: List[Token] = tokens
+        self.pos: int = 0
 
+    # __str__ :: None -> String
     def __str__(self) -> str:
         return 'Parser'
 
+    # __repr__ :: None -> String
     def __repr__(self) -> str:
         return self.__str__()
     
+    # error :: String -> None
     def error(self):
         raise Exception('Parser error')
 
-    def advance(self, *args):
-        token = self.tokens[self.pos]
+    # advance :: String -> None
+    def advance(self, *args: str) -> None:
+        token: Token = self.tokens[self.pos]
         if token.type in args or token.value in args:
             self.pos += 1
         else:
             self.error()
 
-    def int_tag(self):
-        token = self.tokens[self.pos]
+    # int_tag :: None -> Node
+    def int_tag(self) -> Optional[Node]:
+        token: Token = self.tokens[self.pos]
         if token.type == 't_INT':
             self.advance('t_INT')
             return Constant(token.value)
@@ -45,111 +53,123 @@ class Parser(object):
             return Tag(token.value, None)
         elif token.type == 't_LPAR':
             self.advance('t_LPAR')
-            node = self.compare()
+            node: Node = self.compare()
             self.advance('t_RPAR')
             return node
         self.error()
     
-    def mul_div(self, node = None):
+    # mul_div :: Node -> Node
+    def mul_div(self, node: Optional[Node] = None) -> Node:
         if not node:
-            node = self.int_tag()
-        token = self.tokens[self.pos]
+            node: Node = self.int_tag()
+        token: Token = self.tokens[self.pos]
         if (token.value == '*') | (token.value == '/'):
             self.advance('*', '/')
-            node = Operation(node, Operator(token.value), self.int_tag())
+            node: Node = Operation(node, Operator(token.value), self.int_tag())
         else:
             return node
         return self.mul_div(node)
         
-    def plu_min(self, node = None):
+    # plu_min :: Node -> Node
+    def plu_min(self, node: Optional[Node] = None) -> Node:
         if not node:
-            node = self.mul_div()
-        token = self.tokens[self.pos]
+            node: Node = self.mul_div()
+        token: Token = self.tokens[self.pos]
         if (token.value == '+') | (token.value == '-'):
             self.advance('+', '-')
-            node = Operation(node, Operator(token.value), self.mul_div())
+            node: Node = Operation(node, Operator(token.value), self.mul_div())
         else:
             return node
         return self.plu_min(node)
 
-    def compare(self):
-        node = self.plu_min()
-        token = self.tokens[self.pos]
+    # compare :: None -> Node
+    def compare(self) -> Node:
+        node: Node = self.plu_min()
+        token: Token = self.tokens[self.pos]
         if token.type == 't_COMP':
             self.advance('t_COMP')
-            node = Comparison(node, Operator(token.value), self.plu_min())
+            node: Node = Comparison(node, Operator(token.value), self.plu_min())
         return node
 
-    def assign(self):
-        node = self.compare()
-        token = self.tokens[self.pos]
+    # assign :: None -> Node
+    def assign(self) -> Node:
+        node: Node = self.compare()
+        token: Token = self.tokens[self.pos]
         if token.type == 't_ASSIGN':
             self.advance('t_ASSIGN')
-            node = Assignment(node, self.begin())
+            node: Node = Assignment(node, self.begin())
         return node
 
-    def print(self):
-        token = self.tokens[self.pos]
+    # print :: None -> Node
+    def print(self) -> Node:
+        token: Token = self.tokens[self.pos]
         if token.type == 't_PRINTFUN':
             self.advance('t_PRINTFUN')
-            node = Print(self.begin())
+            node: Node = Print(self.begin())
             return node
         return self.assign()
     
-    def if_fun(self):
-        token = self.tokens[self.pos]
+    # if_fun :: None -> Node
+    def if_fun(self) -> Node:
+        token: Token = self.tokens[self.pos]
         if token.type == 't_IFFUN':
             self.advance('t_IFFUN')
             condition = self.compare()
             self.advance('t_COLON')
             self.advance('t_ENDOFLINE')
-            node = If(condition, self.group([]))
+            node: Node = If(condition, self.group([]))
             return node
         return self.print()
 
-    def while_fun(self):
-        token = self.tokens[self.pos]
+    # while_fun :: None -> Node
+    def while_fun(self) -> Node:
+        token: Token = self.tokens[self.pos]
         if token.type == 't_WHILEFUN':
             self.advance('t_WHILEFUN')
             condition = self.compare()
             self.advance('t_COLON')
             self.advance('t_ENDOFLINE')
-            node = While(condition, self.group([]))
+            node: Node = While(condition, self.group([]))
             return node
         return self.if_fun()
 
-    def param_fun(self):
-        token = self.tokens[self.pos]
+    # param_fun :: None -> Node
+    def param_fun(self) -> Node:
+        token: Token = self.tokens[self.pos]
         if token.type == 't_PARAMFUN':
             self.advance('t_PARAMFUN')
             param = self.collect_param([])
             self.advance('t_COLON')
             self.advance('t_ENDOFLINE')
-            node = FunDec(self.group([]), param)
+            node: Node = FunDec(self.group([]), param)
             return node
         return self.while_fun()
     
-    def run(self):
-        token = self.tokens[self.pos]
+    # run :: None -> Node
+    def run(self) -> Node:
+        token: Token = self.tokens[self.pos]
         if token.type == 't_RUN':
             self.advance('t_RUN')
-            node = Run(self.int_tag(), self.collect_param([]))
+            node: Node = Run(self.int_tag(), self.collect_param([]))
             return node
         return self.param_fun()
     
-    def fun_return(self):
-        token = self.tokens[self.pos]
+    # fun_return :: None -> Node
+    def fun_return(self) -> Node:
+        token: Token = self.tokens[self.pos]
         if token.type == 't_RETURN':
             self.advance('t_RETURN')
-            node = Return(self.begin())
+            node: Node = Return(self.begin())
             return node
         return self.run()
 
-    def begin(self):
+    # begin :: None -> Node
+    def begin(self) -> Node:
         return self.fun_return()
 
-    def collect_param(self, nodes: Node = []):
-        token = self.tokens[self.pos]
+    # collect_param :: [Node] -> [Node]
+    def collect_param(self, nodes: List[Node] = []) -> Optional[List[Node]]:
+        token: Token = self.tokens[self.pos]
         if(token.type in ('t_ENDOFLINE', 't_EOF', 't_COLON')):
             return nodes
         if(token.value == '>'):
@@ -158,9 +178,10 @@ class Parser(object):
             return self.collect_param(nodes)
         self.error()
     
-    def group(self, nodes = []):
-        node = self.begin()
-        token = self.tokens[self.pos]
+    # group :: [None] -> Node
+    def group(self, nodes: List[Node] = []) -> Node:
+        node: Node = self.begin()
+        token: Token = self.tokens[self.pos]
         if token.type == 't_ENDOFLINE':
             self.advance('t_ENDOFLINE')
             nodes.append(node)
@@ -170,7 +191,8 @@ class Parser(object):
                 return Group(nodes)
         return self.group(nodes)
 
-    def log(self, nodes: list, pos: int = 0) -> None:
+    # int_tag :: [None] -> Int -> None
+    def log(self, nodes: List[Node], pos: int = 0) -> None:
         if(pos == 0):
             nodes = list(map((lambda x: str(nodes.index(x)) + '\t' + str(x)), nodes))
         if(pos<len(nodes)):
@@ -182,9 +204,10 @@ class Parser(object):
         logfile.write('\n\nLoop and function calls:\t\t\t\t\tWith arguments:')
         logfile.close()
 
-    def parse(self, nodes = []):
-        node = self.begin()
-        token = self.tokens[self.pos]
+    # int_tag :: [None] -> [Node]
+    def parse(self, nodes: List[Node] = []) -> List[Node]:
+        node: Node = self.begin()
+        token: Token = self.tokens[self.pos]
         if token.type == 't_ENDOFLINE':
             self.advance('t_ENDOFLINE')
             nodes.append(node)

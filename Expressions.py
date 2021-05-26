@@ -1,4 +1,6 @@
-regularExpressions = [
+from typing import List, Tuple
+
+regularExpressions: List[Tuple[str, str]] = [
     (r'end',                       't_ENDFUN'),
     (r'\n+',                       't_ENDOFLINE'),
     (r'print\s',                   't_PRINTFUN'),

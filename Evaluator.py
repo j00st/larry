@@ -3,17 +3,21 @@ from functools import reduce
 
 
 class Evaluator(object):
+    # __init__ :: None -> None
     def __init__(self) -> None:
-        self.globalmemory = {}
+        self.globalmemory: dict = {}
 
+    # __str__ :: None -> String
     def __str__(self) -> str:
         return 'Evaluator'
 
+    # __repr__ :: None -> String
     def __repr__(self) -> str:
         return self.__str__()
 
+    # evaluate :: Node -> Int -> None
     def evaluate(self, nodes: Node, pos: int = 0) -> None:
-        node = nodes[pos]
+        node: Node = nodes[pos]
         node(self.globalmemory)
         if pos+1 >= len(nodes):
             memory_string = reduce(lambda x, y: str(x) + '\n' + str(y)+ ' : ' + str(self.globalmemory[y]), self.globalmemory, '\n\nGlobal memory:')
