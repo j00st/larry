@@ -139,8 +139,11 @@ class Operation(Node):
                                             self.right(memory)
         elif self.op(memory) == '*': return self.left(memory) * \
                                             self.right(memory)
-        elif self.op(memory) == '/': return self.left(memory) / \
-                                            self.right(memory)
+        elif self.op(memory) == '/': 
+            right = self.left(memory)
+            if self.right(memory) == 0:
+                Node.error('Devision by zero not allowed')
+            return self.left(memory) / right
 
 
 """
