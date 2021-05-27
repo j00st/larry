@@ -1,5 +1,7 @@
 from typing import List, Tuple
 
+# The RegularExpressions list contains the expressions used by the match_exprs
+# function in ./Lexer.py
 regularExpressions: List[Tuple[str, str]] = [
     (r'end',                       't_ENDFUN'),
     (r'\n+',                       't_ENDOFLINE'),
